@@ -10,7 +10,7 @@ type Data = {
   total: number
 }
 
-export const citizensMap = new Map();
+const citizensMap = new Map();
 
 contractInstance.events
     .Citizen()

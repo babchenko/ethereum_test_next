@@ -16,7 +16,7 @@ export enum ActionType {
 };
 
 
-export  type Action =
+export type Action =
     | { type: ActionType.SET_CITIZEN_PAGE, payload: { page: number, items: Citizen[] } }
     | { type: ActionType.ADD_CITIZEN, payload: Citizen }
     | { type: ActionType.IS_LOADING, payload: boolean }

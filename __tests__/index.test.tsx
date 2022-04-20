@@ -6,7 +6,7 @@ import { RouterContext } from 'next/dist/shared/lib/router-context';
 import axios from 'axios';
 import { AppContext } from 'context/AppContext';
 import { HomePageTestProps } from '../types';
-import { createClickEvent, getTracer, sleep } from 'utils/test';
+import { getTracer, sleep } from 'utils/test';
 
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { mount, configure } from 'enzyme';
@@ -14,7 +14,7 @@ import React from 'react';
 
 configure({adapter: new Adapter()});
 
-jest.mock("next/link", () => {
+jest.mock(  'next/link', () => {
     const Link: React.FC<{ children: React.ReactElement }> = ({children}) => {
         return children;
     }
@@ -22,7 +22,6 @@ jest.mock("next/link", () => {
 });
 
 describe('Home', () => {
-
 
     const dispatch = jest.fn();
 
@@ -38,8 +37,19 @@ describe('Home', () => {
         jest.spyOn(axios, 'get').mockImplementation(jest.fn());
     });
 
-    it('render mock data', () => {
+    it('renders homepage unchanged', () => {
+        const {container} = render(<Container
+            initialState={ initialStateMock }
+            routerQuery={ {query: {page: '1'}} }
+            mockCitizens={ mockCitizens }
+            total={ mockCitizens.length }
+            page={ 1 }
+        />);
 
+        expect(container).toMatchSnapshot()
+    });
+
+    it('render mock data', () => {
         const {getByText} = render(<Container
             initialState={ initialStateMock }
             routerQuery={ {query: {page: '1'}} }
@@ -115,7 +125,7 @@ describe('Home', () => {
 
         pageItems.at(1).simulate('click');
 
-        expect(axios.get).toBeCalledWith( "/api/citizens", {
+        expect(axios.get).toBeCalledWith("/api/citizens", {
             params: {
                 page: 1,
                 // @ts-ignore

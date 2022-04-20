@@ -5,5 +5,6 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect'
 
-import dotenv from "dotenv";
-dotenv.config({ path: ".env" });
+import dotenv from 'dotenv';
+
+dotenv.config({ path: '.env' });
