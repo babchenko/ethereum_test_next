@@ -14,7 +14,6 @@ const MAX_AGE = 150
 
 const NewCitizen: React.FC = () => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
-    const [account, setAccount] = useState<string>();
 
     const [error, setError] = useState<string>('');
     const [success, setSuccess] = useState<string>('');
@@ -48,7 +47,7 @@ const NewCitizen: React.FC = () => {
             setError(e.message);
             setLoading(false);
         }
-    }, [account, contract, reset, setError, setLoading, setSuccess]);
+    }, [router, reset, setError, setLoading, setSuccess]);
 
     return (
         <Layout>

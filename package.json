@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "ts-node --project tsconfig.server.json server/index.ts",
+    "dev": "next dev",
     "lint": "next lint",
     "build": "next build",
     "start": "next start",

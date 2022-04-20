@@ -15,7 +15,7 @@ const Pager: React.FC<PaginationProps> = ({defaultActivePage, onChange, total, d
             const perPage = process.env.NEXT_PUBLIC_PER_PAGE ? parseInt(process.env.NEXT_PUBLIC_PER_PAGE) : defaultPerPage;
             setTotalPages(Math.ceil(total / perPage));
         }
-    }, [total, setTotalPages])
+    }, [total, defaultPerPage, setTotalPages])
 
     useEffect(() => {
         if (router.query.page) {
