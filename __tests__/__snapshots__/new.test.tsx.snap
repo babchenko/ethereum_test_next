@@ -1,0 +1,100 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`New Should match snapshot 1`] = `
+<div>
+  <div>
+    <div
+      class="ui container"
+    >
+      <div
+        class="ui menu"
+        style="margin-top: 10px;"
+      >
+        <a
+          class="item"
+        >
+          FETestTask
+        </a>
+        <div
+          class="right menu"
+        >
+          <a
+            class="item"
+          >
+            +
+          </a>
+        </div>
+      </div>
+      <h3>
+        Create a Citizen
+      </h3>
+      <form
+        class="ui form"
+      >
+        
+        
+        <div
+          class="field"
+        >
+          <label>
+            Name
+          </label>
+          <input
+            data-testid="name"
+            name="name"
+            placeholder="Name"
+          />
+        </div>
+        <div
+          class="field"
+        >
+          <label>
+            City
+          </label>
+          <input
+            data-testid="city"
+            name="city"
+            placeholder="City"
+          />
+        </div>
+        <div
+          class="field"
+        >
+          <label>
+            Age
+          </label>
+          <input
+            data-testid="age"
+            max="150"
+            min="18"
+            name="age"
+            placeholder="Age"
+            step="1"
+            type="number"
+          />
+        </div>
+        <div
+          class="field"
+        >
+          <label>
+            Note
+          </label>
+          <input
+            data-testid="note"
+            name="note"
+            placeholder="Note"
+            type="text"
+          />
+        </div>
+        <button
+          class="ui primary button"
+          data-testid="submit"
+          type="submit"
+        >
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+`;

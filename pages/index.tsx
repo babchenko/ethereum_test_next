@@ -1,65 +1,149 @@
-import Head from 'next/head'
-import Image from 'next/image'
+import type { NextPage } from 'next'
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { GetServerSidePropsContext } from 'next';
+import Layout from 'components/Layout';
+import { Citizen, CitizensPageProps } from 'types';
+import Table from 'components/Table';
+import Pager from 'components/Pager';
+import Modal from 'components/Modal';
 
-import styles from '@/pages/index.module.css'
+import { AppContext } from 'context/AppContext';
+import { ActionType } from 'state/types';
+import axios from 'axios';
 
-export default function Home() {
-  return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
 
-      <main>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+const Home: NextPage<CitizensPageProps> = ({citizens, total, page}) => {
+    const {dispatch, state} = useContext(AppContext);
 
-        <p className={styles.description}>
-          Get started by editing <code>pages/index.js</code>
-        </p>
+    const [items, setItems] = useState<Citizen[]>(citizens);
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [note, setNote] = useState<string>('');
+    const [modalTitle, setModalTitle] = useState<string>('');
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+    const perPage = process.env.NEXT_PUBLIC_PER_PAGE ? parseInt(process.env.NEXT_PUBLIC_PER_PAGE) : 10;
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+    useEffect(() => {
+        dispatch({
+            type: ActionType.SET_CITIZEN_PAGE,
+            payload: {
+                // @ts-ignore
+                page: page || 0,
+                items: citizens
+            }
+        });
 
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+        dispatch({
+            type: ActionType.SET_TOTAL,
+            payload: total
+        });
+    }, [citizens, total, page, dispatch]);
 
-          <a href="https://vercel.com/new" className={styles.card}>
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
+    const onChange = useCallback(async (activePage: number) => {
+        const isLastPage = activePage === Math.ceil(state.total / perPage) - 1;
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
-    </div>
-  )
+        /***
+         * We can't retrieve last page from cache because new items may be added on backend
+         */
+        if (state.pageData[activePage] && !isLastPage) {
+            return setItems(state.pageData[activePage]);
+        }
+
+        dispatch({
+            type: ActionType.IS_LOADING,
+            payload: true
+        });
+
+        const {data: {citizens, total}} = await axios.get('/api/citizens', {params: {page: activePage, perPage}})
+
+        dispatch({
+            type: ActionType.SET_CITIZEN_PAGE,
+            payload: {
+                page: activePage,
+                items: citizens
+            }
+        });
+
+        dispatch({
+            type: ActionType.SET_TOTAL,
+            payload: total
+        });
+
+        dispatch({
+            type: ActionType.IS_LOADING,
+            payload: false
+        });
+
+        setItems(citizens);
+    }, [state.pageData, state.total, total, setItems, dispatch])
+
+    const clickHandler = useCallback(async (id: number, name: string) => {
+
+        if (state.notes[id]) {
+            setNote(state.notes[id])
+            setModalTitle(`Note for ${ name }`);
+            return setShowModal(true);
+        }
+
+        setShowModal(true);
+        setModalTitle(`Note for ${ name }`);
+
+        const {data: {note}} = await axios.get('/api/note', {params: {id}});
+
+        setNote(note);
+
+        dispatch({
+            type: ActionType.SET_NOTE,
+            payload: {
+                note,
+                id
+            }
+        });
+    }, [state.notes, setNote, setShowModal, setModalTitle, dispatch]);
+
+    const onClose = useCallback(() => {
+        setNote('');
+        setModalTitle('');
+        setShowModal(false);
+    }, [setShowModal, setNote, setModalTitle]);
+
+    return (
+        <Layout>
+            <>
+                <Table items={ items } loading={ state.loading } onClickItem={ clickHandler }>
+                    <Pager total={ state.total } onChange={ onChange }/>
+                </Table>
+                <Modal content={ note } isOpen={ showModal } onClose={ onClose } title={ modalTitle }/>
+            </>
+        </Layout>
+    );
 }
+
+export const getServerSideProps = async ({req, query}: GetServerSidePropsContext) => {
+    const protocol =
+        req.headers["x-forwarded-proto"]
+            ? "https"
+            : "http";
+
+    let {page} = query;
+
+    if (page) {
+        page = Array.isArray(page) ? page[0] : page;
+        // @ts-ignore
+        page = parseInt(page) - 1 || 0;
+    } else {
+        // @ts-ignore
+        page = 0;
+    }
+
+    const url = `${ protocol }://${ req.headers.host }/api/citizens`;
+    const {data} = await axios.get(url, {params: {page, perPage: process.env.NEXT_PUBLIC_PER_PAGE}});
+
+    return {
+        props: {
+            ...data,
+            page,
+        }
+    }
+};
+
+export default Home
