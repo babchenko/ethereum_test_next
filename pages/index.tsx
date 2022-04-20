@@ -1,14 +1,12 @@
-import type { NextPage } from 'next'
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { GetServerSidePropsContext } from 'next';
+import type { NextPage, GetServerSidePropsContext } from 'next'
 import Layout from 'components/Layout';
-import { Citizen, CitizensPageProps } from 'types';
 import Table from 'components/Table';
 import Pager from 'components/Pager';
 import Modal from 'components/Modal';
-
 import { AppContext } from 'context/AppContext';
 import { ActionType } from 'state/types';
+import { Citizen, CitizensPageProps } from 'types';
 import axios from 'axios';
 
 

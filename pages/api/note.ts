@@ -16,5 +16,5 @@ export default async function handler(
     }
 
     const note = await contractInstance.methods.getNoteByCitizenId(id).call();
-    return res.status(200).json({ note })
+    return res.status(200).json({note})
 }

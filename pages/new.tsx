@@ -1,12 +1,12 @@
 // @ts-nocheck
 import React, { useCallback, useEffect, useState } from 'react';
-import Layout from 'components/Layout';
-import { Form, Button, Message } from 'semantic-ui-react';
 import { useForm } from 'react-hook-form';
+import { Form, Button, Message } from 'semantic-ui-react';
+import { useRouter } from 'next/router';
+import Layout from 'components/Layout';
 import contract from 'ethereum/contract';
 import web3 from 'ethereum/web3';
-import { NewCitizen } from '../types';
-import { useRouter } from 'next/router';
+import { NewCitizen } from 'types';
 
 
 const MIN_AGE = 18;

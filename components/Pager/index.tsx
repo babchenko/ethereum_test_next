@@ -1,8 +1,8 @@
-import { Pagination } from 'semantic-ui-react';
 import React, { useEffect, useState } from 'react';
-import { PaginationProps } from './pager.types';
-import { StrictPaginationProps } from 'semantic-ui-react';
 import { useRouter } from 'next/router';
+import { Pagination, StrictPaginationProps } from 'semantic-ui-react';
+import { PaginationProps } from './pager.types';
+
 
 
 const Pager: React.FC<PaginationProps> = ({defaultActivePage, onChange, total, defaultPerPage = 10}) => {
